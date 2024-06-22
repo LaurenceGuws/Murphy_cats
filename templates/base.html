@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Cat Foster Community</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  </head>
+  <body>
+    <nav>
+      <a href="{{ url_for('index') }}">Home</a>
+      <a href="{{ url_for('cat.list_cats') }}">Cats</a>
+    </nav>
+    <div class="content">
+      {% block content %}{% endblock %}
+    </div>
+  </body>
+</html>
