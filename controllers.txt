@@ -1,0 +1,371 @@
+# controllers/adopter_controller.py
+from flask import Blueprint, request, jsonify
+from utils.db_instance import db
+from models.adopter import Adopter
+from sqlalchemy.exc import IntegrityError
+
+adopter_bp = Blueprint('adopters', __name__, url_prefix='/adopters')
+
+@adopter_bp.route('/', methods=['GET'])
+def list_adopters():
+    adopters = Adopter.query.all()
+    return jsonify([adopter.to_dict() for adopter in adopters])
+
+@adopter_bp.route('/<int:adopter_id>', methods=['GET'])
+def get_adopter(adopter_id):
+    adopter = Adopter.query.get_or_404(adopter_id)
+    return jsonify(adopter.to_dict())
+
+@adopter_bp.route('/', methods=['POST'])
+def create_adopter():
+    data = request.json
+    if 'AdopterID' in data:
+        data.pop('AdopterID')  # Ensure AdopterID is not set explicitly
+    adopter = Adopter(**data)
+    db.session.add(adopter)
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({'error': 'Adopter with this ID already exists or invalid data provided.'}), 400
+    return jsonify(adopter.to_dict()), 201
+
+@adopter_bp.route('/<int:adopter_id>', methods=['PUT'])
+def update_adopter(adopter_id):
+    adopter = Adopter.query.get_or_404(adopter_id)
+    data = request.json
+    for key, value in data.items():
+        setattr(adopter, key, value)
+    db.session.commit()
+    return jsonify(adopter.to_dict())
+
+@adopter_bp.route('/<int:adopter_id>', methods=['DELETE'])
+def delete_adopter(adopter_id):
+    adopter = Adopter.query.get_or_404(adopter_id)
+    db.session.delete(adopter)
+    db.session.commit()
+    return '', 204
+# controllers/cat_controller.py
+from flask import Blueprint, request, jsonify
+from utils.db_instance import db
+from models.cat import Cat
+from datetime import datetime
+
+cat_bp = Blueprint('cats', __name__, url_prefix='/cats')
+
+def convert_to_datetime(date_str):
+    if date_str is not None:
+        try:
+            return datetime.strptime(date_str, '%a, %d %b %Y %H:%M:%S GMT')
+        except ValueError:
+            return None
+    return None
+
+@cat_bp.route('/', methods=['GET'])
+def list_cats():
+    cats = Cat.query.all()
+    return jsonify([cat.to_dict() for cat in cats])
+
+@cat_bp.route('/<int:cat_id>', methods=['GET'])
+def get_cat(cat_id):
+    cat = Cat.query.get_or_404(cat_id)
+    return jsonify(cat.to_dict())
+
+@cat_bp.route('/', methods=['POST'])
+def create_cat():
+    data = request.json
+    data['BirthDate'] = convert_to_datetime(data.get('BirthDate'))
+    data['FirstVax'] = convert_to_datetime(data.get('FirstVax'))
+    data['SecondVax'] = convert_to_datetime(data.get('SecondVax'))
+    data['SteriDue'] = convert_to_datetime(data.get('SteriDue'))
+    data['AdoptedDate'] = convert_to_datetime(data.get('AdoptedDate'))
+    data['ReceivedDate'] = convert_to_datetime(data.get('ReceivedDate'))
+    cat = Cat(**data)
+    db.session.add(cat)
+    db.session.commit()
+    return jsonify(cat.to_dict()), 201
+
+@cat_bp.route('/<int:cat_id>', methods=['PUT'])
+def update_cat(cat_id):
+    cat = Cat.query.get_or_404(cat_id)
+    data = request.json
+    data['BirthDate'] = convert_to_datetime(data.get('BirthDate'))
+    data['FirstVax'] = convert_to_datetime(data.get('FirstVax'))
+    data['SecondVax'] = convert_to_datetime(data.get('SecondVax'))
+    data['SteriDue'] = convert_to_datetime(data.get('SteriDue'))
+    data['AdoptedDate'] = convert_to_datetime(data.get('AdoptedDate'))
+    data['ReceivedDate'] = convert_to_datetime(data.get('ReceivedDate'))
+    for key, value in data.items():
+        setattr(cat, key, value)
+    db.session.commit()
+    return jsonify(cat.to_dict())
+
+@cat_bp.route('/<int:cat_id>', methods=['DELETE'])
+def delete_cat(cat_id):
+    cat = Cat.query.get_or_404(cat_id)
+    db.session.delete(cat)
+    db.session.commit()
+    return '', 204
+# controllers/death_controller.py
+from flask import Blueprint, request, jsonify
+from utils.db_instance import db
+from models.death import Death
+from datetime import datetime
+from sqlalchemy.exc import IntegrityError
+
+death_bp = Blueprint('deaths', __name__, url_prefix='/deaths')
+
+def convert_to_datetime(date_str):
+    if date_str is not None:
+        try:
+            return datetime.strptime(date_str, '%a, %d %b %Y %H:%M:%S GMT')
+        except ValueError:
+            return None
+    return None
+
+@death_bp.route('/', methods=['GET'])
+def list_deaths():
+    deaths = Death.query.all()
+    return jsonify([death.to_dict() for death in deaths])
+
+@death_bp.route('/<int:death_id>', methods=['GET'])
+def get_death(death_id):
+    death = Death.query.get_or_404(death_id)
+    return jsonify(death.to_dict())
+
+@death_bp.route('/', methods=['POST'])
+def create_death():
+    data = request.json
+    if 'CatID' not in data or data['CatID'] is None:
+        return jsonify({'error': 'CatID is required.'}), 400
+    data['Date'] = convert_to_datetime(data.get('Date'))
+    if data['Date'] is None:
+        return jsonify({'error': 'Invalid date format. Expected format: Wed, 01 Jan 2020 00:00:00 GMT'}), 400
+    death = Death(**data)
+    db.session.add(death)
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({'error': 'Integrity error occurred. Please ensure all required fields are provided.'}), 400
+    return jsonify(death.to_dict()), 201
+
+@death_bp.route('/<int:death_id>', methods=['PUT'])
+def update_death(death_id):
+    death = Death.query.get_or_404(death_id)
+    data = request.json
+    if 'CatID' in data and data['CatID'] is None:
+        return jsonify({'error': 'CatID cannot be null.'}), 400
+    data['Date'] = convert_to_datetime(data.get('Date'))
+    if data['Date'] is None:
+        return jsonify({'error': 'Invalid date format. Expected format: Wed, 01 Jan 2020 00:00:00 GMT'}), 400
+    for key, value in data.items():
+        setattr(death, key, value)
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({'error': 'Integrity error occurred. Please ensure all required fields are provided.'}), 400
+    return jsonify(death.to_dict())
+
+@death_bp.route('/<int:death_id>', methods=['DELETE'])
+def delete_death(death_id):
+    death = Death.query.get_or_404(death_id)
+    db.session.delete(death)
+    db.session.commit()
+    return '', 204
+# controllers/document_controller.py
+from flask import Blueprint, request, jsonify
+from utils.db_instance import db
+from models.document import Document
+
+document_bp = Blueprint('documents', __name__, url_prefix='/documents')
+
+@document_bp.route('/', methods=['GET'])
+def list_documents():
+    documents = Document.query.all()
+    return jsonify([document.to_dict() for document in documents])
+
+@document_bp.route('/<int:doc_id>', methods=['GET'])
+def get_document(doc_id):
+    document = Document.query.get_or_404(doc_id)
+    return jsonify(document.to_dict())
+
+@document_bp.route('/', methods=['POST'])
+def create_document():
+    data = request.json
+    document = Document(**data)
+    db.session.add(document)
+    db.session.commit()
+    return jsonify(document.to_dict()), 201
+
+@document_bp.route('/<int:doc_id>', methods=['PUT'])
+def update_document(doc_id):
+    document = Document.query.get_or_404(doc_id)
+    data = request.json
+    for key, value in data.items():
+        setattr(document, key, value)
+    db.session.commit()
+    return jsonify(document.to_dict())
+
+@document_bp.route('/<int:doc_id>', methods=['DELETE'])
+def delete_document(doc_id):
+    document = Document.query.get_or_404(doc_id)
+    db.session.delete(document)
+    db.session.commit()
+    return '', 204
+# controllers/locationmove_controller.py
+from flask import Blueprint, request, jsonify
+from utils.db_instance import db
+from models.locationmove import LocationMove
+from datetime import datetime
+
+locationmove_bp = Blueprint('locationmoves', __name__, url_prefix='/locationmoves')
+
+def convert_to_datetime(date_str):
+    if date_str is not None:
+        try:
+            return datetime.strptime(date_str, '%a, %d %b %Y %H:%M:%S GMT')
+        except ValueError:
+            return None
+    return None
+
+@locationmove_bp.route('/', methods=['GET'])
+def list_locationmoves():
+    locationmoves = LocationMove.query.all()
+    return jsonify([move.to_dict() for move in locationmoves])
+
+@locationmove_bp.route('/<int:move_id>', methods=['GET'])
+def get_locationmove(move_id):
+    locationmove = LocationMove.query.get_or_404(move_id)
+    return jsonify(locationmove.to_dict())
+
+@locationmove_bp.route('/', methods=['POST'])
+def create_locationmove():
+    data = request.json
+    data['Date'] = convert_to_datetime(data.get('Date'))
+    if data['Date'] is None:
+        return jsonify({'error': 'Invalid date format. Expected format: Wed, 01 Jan 2020 00:00:00 GMT'}), 400
+    locationmove = LocationMove(**data)
+    db.session.add(locationmove)
+    db.session.commit()
+    return jsonify(locationmove.to_dict()), 201
+
+@locationmove_bp.route('/<int:move_id>', methods=['PUT'])
+def update_locationmove(move_id):
+    locationmove = LocationMove.query.get_or_404(move_id)
+    data = request.json
+    data['Date'] = convert_to_datetime(data.get('Date'))
+    if data['Date'] is None:
+        return jsonify({'error': 'Invalid date format. Expected format: Wed, 01 Jan 2020 00:00:00 GMT'}), 400
+    for key, value in data.items():
+        setattr(locationmove, key, value)
+    db.session.commit()
+    return jsonify(locationmove.to_dict())
+
+@locationmove_bp.route('/<int:move_id>', methods=['DELETE'])
+def delete_locationmove(move_id):
+    locationmove = LocationMove.query.get_or_404(move_id)
+    db.session.delete(locationmove)
+    db.session.commit()
+    return '', 204
+# controllers/vetvisit_controller.py
+from flask import Blueprint, request, jsonify
+from utils.db_instance import db
+from models.vetvisit import VetVisit
+from datetime import datetime
+
+vetvisit_bp = Blueprint('vetvisits', __name__, url_prefix='/vetvisits')
+
+def convert_to_datetime(date_str):
+    if date_str is not None:
+        try:
+            return datetime.strptime(date_str, '%a, %d %b %Y %H:%M:%S GMT')
+        except ValueError:
+            return None
+    return None
+
+@vetvisit_bp.route('/', methods=['GET'])
+def list_vetvisits():
+    vetvisits = VetVisit.query.all()
+    return jsonify([vetvisit.to_dict() for vetvisit in vetvisits])
+
+@vetvisit_bp.route('/<int:visit_id>', methods=['GET'])
+def get_vetvisit(visit_id):
+    vetvisit = VetVisit.query.get_or_404(visit_id)
+    return jsonify(vetvisit.to_dict())
+
+@vetvisit_bp.route('/', methods=['POST'])
+def create_vetvisit():
+    data = request.json
+    data['Date'] = convert_to_datetime(data.get('Date'))
+    vetvisit = VetVisit(**data)
+    db.session.add(vetvisit)
+    db.session.commit()
+    return jsonify(vetvisit.to_dict()), 201
+
+@vetvisit_bp.route('/<int:visit_id>', methods=['PUT'])
+def update_vetvisit(visit_id):
+    vetvisit = VetVisit.query.get_or_404(visit_id)
+    data = request.json
+    data['Date'] = convert_to_datetime(data.get('Date'))
+    for key, value in data.items():
+        setattr(vetvisit, key, value)
+    db.session.commit()
+    return jsonify(vetvisit.to_dict())
+
+@vetvisit_bp.route('/<int:visit_id>', methods=['DELETE'])
+def delete_vetvisit(visit_id):
+    vetvisit = VetVisit.query.get_or_404(visit_id)
+    db.session.delete(vetvisit)
+    db.session.commit()
+    return '', 204
+# controllers/volunteer_controller.py
+from flask import Blueprint, request, jsonify
+from utils.db_instance import db
+from models.volunteer import Volunteer
+from sqlalchemy.exc import IntegrityError
+
+volunteer_bp = Blueprint('volunteers', __name__, url_prefix='/volunteers')
+
+@volunteer_bp.route('/', methods=['GET'])
+def list_volunteers():
+    volunteers = Volunteer.query.all()
+    return jsonify([volunteer.to_dict() for volunteer in volunteers])
+
+@volunteer_bp.route('/<int:volunteer_id>', methods=['GET'])
+def get_volunteer(volunteer_id):
+    volunteer = Volunteer.query.get_or_404(volunteer_id)
+    return jsonify(volunteer.to_dict())
+
+@volunteer_bp.route('/', methods=['POST'])
+def create_volunteer():
+    data = request.json
+    volunteer = Volunteer(**data)
+    db.session.add(volunteer)
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({'error': 'A volunteer with this username already exists.'}), 400
+    return jsonify(volunteer.to_dict()), 201
+
+@volunteer_bp.route('/<int:volunteer_id>', methods=['PUT'])
+def update_volunteer(volunteer_id):
+    volunteer = Volunteer.query.get_or_404(volunteer_id)
+    data = request.json
+    for key, value in data.items():
+        setattr(volunteer, key, value)
+    try:
+        db.session.commit()
+    except IntegrityError as e:
+        db.session.rollback()
+        return jsonify({'error': 'A volunteer with this username already exists.'}), 400
+    return jsonify(volunteer.to_dict())
+
+@volunteer_bp.route('/<int:volunteer_id>', methods=['DELETE'])
+def delete_volunteer(volunteer_id):
+    volunteer = Volunteer.query.get_or_404(volunteer_id)
+    db.session.delete(volunteer)
+    db.session.commit()
+    return '', 204

@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block title %}{{ operation }} {{ model_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold mb-4">{{ operation }} {{ model_name }}</h1>
+    <form method="POST">
+        {% for field in form_fields %}
+            <div class="mb-4">
+                <label class="block text-sm font-bold mb-2" for="{{ field }}">{{ field }}</label>
+                <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="{{ field }}" type="text" name="{{ field }}" value="{{ instance|default({})|attribute(field)|default('') }}" required>
+            </div>
+        {% endfor %}
+        <div class="flex items-center justify-between">
+            <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="submit">{{ operation }}</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

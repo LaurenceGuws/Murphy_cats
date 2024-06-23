@@ -1,0 +1,169 @@
+{% extends "layout.html" %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Main Container Pane -->
+<div class="bg-white shadow-md rounded-lg p-6 mx-auto max-w-4xl">
+
+    <!-- Categories Pane -->
+    <div class="border-b border-gray-200 mb-6">
+        <nav class="flex justify-center space-x-4 overflow-x-auto hide-scroll-bar" aria-label="Categories">
+            <!-- Category Links -->
+            <div class="inline-block">
+                <a href="/crud/adopters" class="flex flex-col items-center text-gray-500 hover:text-gray-700 py-4 px-2 font-medium text-sm">
+                    <div class="w-16 h-16 overflow-hidden rounded-full shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                        <img src="https://via.placeholder.com/150" alt="Adopters">
+                    </div>
+                    <span>Adopters</span>
+                </a>
+            </div>
+            <div class="inline-block">
+                <a href="/crud/cats" class="flex flex-col items-center text-gray-500 hover:text-gray-700 py-4 px-2 font-medium text-sm">
+                    <div class="w-16 h-16 overflow-hidden rounded-full shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                        <img src="https://via.placeholder.com/150" alt="Cats">
+                    </div>
+                    <span>Cats</span>
+                </a>
+            </div>
+            <div class="inline-block">
+                <a href="/crud/deaths" class="flex flex-col items-center text-gray-500 hover:text-gray-700 py-4 px-2 font-medium text-sm">
+                    <div class="w-16 h-16 overflow-hidden rounded-full shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                        <img src="https://via.placeholder.com/150" alt="Deaths">
+                    </div>
+                    <span>Deaths</span>
+                </a>
+            </div>
+            <div class="inline-block">
+                <a href="/crud/documents" class="flex flex-col items-center text-gray-500 hover:text-gray-700 py-4 px-2 font-medium text-sm">
+                    <div class="w-16 h-16 overflow-hidden rounded-full shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                        <img src="https://via.placeholder.com/150" alt="Documents">
+                    </div>
+                    <span>Documents</span>
+                </a>
+            </div>
+            <div class="inline-block">
+                <a href="/crud/locationmoves" class="flex flex-col items-center text-gray-500 hover:text-gray-700 py-4 px-2 font-medium text-sm">
+                    <div class="w-16 h-16 overflow-hidden rounded-full shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                        <img src="https://via.placeholder.com/150" alt="Location Moves">
+                    </div>
+                    <span>Location Moves</span>
+                </a>
+            </div>
+            <div class="inline-block">
+                <a href="/crud/vetvisits" class="flex flex-col items-center text-gray-500 hover:text-gray-700 py-4 px-2 font-medium text-sm">
+                    <div class="w-16 h-16 overflow-hidden rounded-full shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                        <img src="https://via.placeholder.com/150" alt="Vet Visits">
+                    </div>
+                    <span>Vet Visits</span>
+                </a>
+            </div>
+            <div class="inline-block">
+                <a href="/crud/volunteers" class="flex flex-col items-center text-gray-500 hover:text-gray-700 py-4 px-2 font-medium text-sm">
+                    <div class="w-16 h-16 overflow-hidden rounded-full shadow-md bg-white hover:shadow-xl transition-shadow duration-300 ease-in-out">
+                        <img src="https://via.placeholder.com/150" alt="Volunteers">
+                    </div>
+                    <span>Volunteers</span>
+                </a>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Tabs Section -->
+    <div class="border-b border-gray-200 mb-6">
+        <nav class="flex justify-center space-x-8" aria-label="Tabs">
+            <a href="#posts" class="tab-item text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm" aria-current="page">
+                Posts
+            </a>
+            <a href="#saved" class="tab-item text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                Saved
+            </a>
+            <a href="#tagged" class="tab-item text-gray-500 hover:text-gray-700 whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                Tagged
+            </a>
+        </nav>
+    </div>
+
+    <!-- Cards Pane -->
+    <div id="posts" class="tab-content">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+            {% for instance in instances %}
+            <div class="bg-white p-6 rounded-lg shadow-lg max-w-xs relative">
+                <div class="absolute top-2 right-2">
+                    <button class="text-gray-500 hover:text-gray-700 focus:outline-none" onclick="toggleDropdown(event)">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12a2 2 0 104 0 2 2 0 00-4 0zM12 12a2 2 0 104 0 2 2 0 00-4 0zM18 12a2 2 0 104 0 2 2 0 00-4 0z"></path>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-10">
+                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Edit</a>
+                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Delete</a>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">{{ instance.title }}</h2>
+                <div class="mb-4">
+                    {% for key, value in instance.items() %}
+                    <p class="text-gray-700"><strong>{{ key }}:</strong> {{ value }}</p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div id="saved" class="tab-content hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+            <!-- Dummy Saved Cards -->
+            <div class="bg-white p-6 rounded-lg shadow-lg max-w-xs relative">
+                <div class="absolute top-2 right-2">
+                    <button class="text-gray-500 hover:text-gray-700 focus:outline-none" onclick="toggleDropdown(event)">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12a2 2 0 104 0 2 2 0 00-4 0zM12 12a2 2 0 104 0 2 2 0 00-4 0zM18 12a2 2 0 104 0 2 2 0 00-4 0z"></path>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-10">
+                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Edit</a>
+                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Delete</a>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Saved Card Title</h2>
+                <div class="mb-4">
+                    <p class="text-gray-700"><strong>Field:</strong> Value</p>
+                    <!-- Add more key-value pairs as needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="tagged" class="tab-content hidden">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
+            <!-- Dummy Tagged Cards -->
+            <div class="bg-white p-6 rounded-lg shadow-lg max-w-xs relative">
+                <div class="absolute top-2 right-2">
+                    <button class="text-gray-500 hover:text-gray-700 focus:outline-none" onclick="toggleDropdown(event)">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 12a2 2 0 104 0 2 2 0 00-4 0zM12 12a2 2 0 104 0 2 2 0 00-4 0zM18 12a2 2 0 104 0 2 2 0 00-4 0z"></path>
+                        </svg>
+                    </button>
+                    <div class="dropdown-menu hidden absolute right-0 mt-2 w-48 bg-white border rounded shadow-md z-10">
+                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Edit</a>
+                        <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Delete</a>
+                    </div>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">Tagged Card Title</h2>
+                <div class="mb-4">
+                    <p class="text-gray-700"><strong>Field:</strong> Value</p>
+                    <!-- Add more key-value pairs as needed -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function toggleDropdown(event) {
+    const menu = event.currentTarget.nextElementSibling;
+    menu.classList.toggle('hidden');
+}
+</script>
+{% endblock %}

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.1.2/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        .hide-scroll-bar {
+            -ms-overflow-style: none;  /* Internet Explorer 10+ */
+            scrollbar-width: none;  /* Firefox */
+        }
+        .hide-scroll-bar::-webkit-scrollbar {
+            display: none;  /* Safari and Chrome */
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+    <div class="bg-white shadow-md">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <h1 class="text-2xl font-bold">Flask Tailwind Auth</h1>
+            <div class="relative inline-block text-left">
+                <div>
+                    <button type="button" class="inline-flex justify-center w-full rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500" id="menu-button" aria-expanded="true" aria-haspopup="true">
+                        Menu
+                        <svg class="-mr-1 ml-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M5.293 9.293a1 1 0 011.414 0L10 12.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                <div id="menu-dropdown" class="hidden origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none" role="menu" aria-orientation="vertical" aria-labelledby="menu-button">
+                    <div class="py-1" role="none">
+                        <a href="{{ url_for('pages.home') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Home</a>
+                        <a href="{{ url_for('pages.register') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Register</a>
+                        <a href="{{ url_for('pages.login') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Login</a>
+                        <a href="{{ url_for('pages.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">My Profile</a>
+                        <a href="{{ url_for('pages.upload_document') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Upload Document</a>
+                        <a href="{{ url_for('crud.list', model_name='cat') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Manage Cats</a>
+                        <a href="{{ url_for('crud.list', model_name='volunteer') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">Manage Volunteers</a>
+                        <!-- Add more links as needed -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container mx-auto px-4 py-8">
+        {% block content %}{% endblock %}
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const menuButton = document.getElementById('menu-button');
+            const menuDropdown = document.getElementById('menu-dropdown');
+
+            menuButton.addEventListener('click', function() {
+                menuDropdown.classList.toggle('hidden');
+            });
+
+            // Close the dropdown if clicked outside
+            window.addEventListener('click', function(e) {
+                if (!menuButton.contains(e.target) && !menuDropdown.contains(e.target)) {
+                    menuDropdown.classList.add('hidden');
+                }
+            });
+
+            const tabs = document.querySelectorAll('.tab-item');
+            const tabContents = document.querySelectorAll('.tab-content');
+
+            if (tabs.length > 0 && tabContents.length > 0) {
+                tabs.forEach(tab => {
+                    tab.addEventListener('click', (event) => {
+                        event.preventDefault();
+                        tabs.forEach(item => item.classList.remove('border-blue-500', 'text-blue-600'));
+                        tab.classList.add('border-blue-500', 'text-blue-600');
+
+                        const target = document.querySelector(tab.getAttribute('href'));
+                        tabContents.forEach(content => content.classList.add('hidden'));
+                        target.classList.remove('hidden');
+                    });
+                });
+
+                // Show the first tab content by default
+                tabs[0].classList.add('border-blue-500', 'text-blue-600');
+                tabContents[0].classList.remove('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

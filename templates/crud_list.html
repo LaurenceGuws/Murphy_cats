@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block title %}List of {{ model_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow-lg">
+    <h1 class="text-2xl font-bold mb-4">List of {{ model_name }}</h1>
+    <a href="{{ url_for('crud.create', model_name=model_name) }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline mb-4 inline-block">Add New {{ model_name }}</a>
+    <ul>
+        {% for instance in instances %}
+            <li class="mb-2">
+                <div class="flex justify-between items-center">
+                    <span>{{ instance }}</span>
+                    <div>
+                        <a href="{{ url_for('crud.update', model_name=model_name, id=instance.CatID) }}" class="text-blue-500 hover:text-blue-700 mr-2">Edit</a>
+                        <form action="{{ url_for('crud.delete', model_name=model_name, id=instance.CatID) }}" method="POST" class="inline">
+                            <button type="submit" class="text-red-500 hover:text-red-700">Delete</button>
+                        </form>
+                    </div>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

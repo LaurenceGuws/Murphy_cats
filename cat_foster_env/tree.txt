@@ -1,0 +1,28 @@
+Folder PATH listing for volume Windows
+Volume serial number is 5406-8FF5
+C:.
+|   lib64
+|   pyvenv.cfg
+|   tree.txt
+|   
++---bin
+|       activate
+|       activate.csh
+|       activate.fish
+|       Activate.ps1
+|       flask
+|       gunicorn
+|       normalizer
+|       pip
+|       pip3
+|       pip3.10
+|       python
+|       python3
+|       python3.10
+|       
+\---include
+    \---site
+        \---python3.10
+            \---greenlet
+                    greenlet.h
+                    

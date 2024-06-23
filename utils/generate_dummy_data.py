@@ -13,10 +13,15 @@ volunteers = [
     ('carol', 'password789', 'Location C')
 ]
 
+def random_date(start, end):
+    return start + timedelta(
+        seconds=random.randint(0, int((end - start).total_seconds())),
+    )
+
 adopters = [
-    ('John Doe', 'john@example.com'),
-    ('Jane Smith', 'jane@example.com'),
-    ('Emily Johnson', 'emily@example.com')
+    (f'John Doe{random_date(datetime(2020, 1, 1), datetime(2023, 6, 20))}', 'john@example.com'),
+    (f'Jane Smith{random_date(datetime(2020, 1, 1), datetime(2023, 6, 20))}', 'jane@example.com'),
+    (f'Emily Johnson{random_date(datetime(2020, 1, 1), datetime(2023, 6, 20))}', 'emily@example.com')
 ]
 
 cats = [
@@ -24,11 +29,6 @@ cats = [
     ('Tom', 'Male', 'Gray', 'Injured', 5.2, '2019-06-15', '2019-08-15', '2019-09-15', '2020-06-15', None, '2019-06-15', 'Location B', None),
     ('Luna', 'Female', 'Black', 'Healthy', 3.8, '2021-05-20', '2021-07-20', '2021-08-20', '2022-05-20', None, '2021-05-20', 'Location C', None)
 ]
-
-def random_date(start, end):
-    return start + timedelta(
-        seconds=random.randint(0, int((end - start).total_seconds())),
-    )
 
 vet_visits = [
     ('Whiskers', 'Checkup', 'None', random_date(datetime(2020, 1, 1), datetime(2023, 6, 20)).strftime('%Y-%m-%d %H:%M:%S')),
@@ -54,6 +54,11 @@ deaths = [
 # Connect to the SQLite database
 conn = sqlite3.connect(db_path)
 cur = conn.cursor()
+
+# Clear existing data
+tables = ['Volunteers', 'Adopters', 'Cats', 'VetVisits', 'LocationMoves', 'Documents', 'Deaths']
+for table in tables:
+    cur.execute(f'DELETE FROM {table}')
 
 # Insert dummy data into Volunteers
 cur.executemany('''

@@ -1,4 +1,3 @@
-# controllers/cat_controller.py
 from flask import Blueprint, request, jsonify
 from utils.db_instance import db
 from models.cat import Cat
